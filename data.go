@@ -11,6 +11,11 @@ type Data struct {
 	KidUp     uint
 	KidDown   uint
 	Locks     uint
+	Raw       []byte
+}
+
+func (d *Data) RawResponse() []byte {
+	return d.Raw
 }
 
 type DataType int
@@ -62,8 +67,12 @@ func (dev *device) ReadData(addr DataType) (*Data, error) {
 		AdultDown: uint(binary.LittleEndian.Uint16(buf[2:4])),
 		KidUp:     uint(binary.LittleEndian.Uint16(buf[4:6])),
 		KidDown:   uint(binary.LittleEndian.Uint16(buf[6:8])),
-		Locks:     uint(binary.LittleEndian.Uint16(buf[8:10])),
+		// Locks:     uint(binary.LittleEndian.Uint16(buf[8:10])),
 	}
+
+	cpBuff := make([]byte, n)
+	copy(cpBuff, buf)
+	data.Raw = cpBuff
 
 	return data, nil
 }
